@@ -10,7 +10,7 @@ local cells = {{'L', -2, 2},
 {'I', 1, 2},
 {'C', 2, 2}}
 
-function loadCSV(filename)
+local function loadCSV(filename)
     if love.filesystem.getInfo(filename) then
         local contents, size = love.filesystem.read(filename)
         for line in contents:gmatch("[^\r\n]+") do
@@ -25,48 +25,17 @@ function loadCSV(filename)
     end
 end
 
-
-local function isPlaybuttonInteract()
-    Playbutton_active = false
-    Playbutton_released = false
-    if mouseX > 340 and mouseX < 460 then
-        if mouseY > 380 and mouseY < 418 then
-            Playbutton_active = true
-        else
-            Playbutton_active = false
-        end
-    end
-    return {Playbutton_active}
-end
-
-local function quitButtonInteract()
-    Quitbutton_active = false
-    Quitbutton_released = false
-    if mouseX > 0 and mouseX < 100 then
-        if mouseY > 0 and mouseY < 100 then
-            Quitbutton_active = true
-        else
-            Quitbutton_active = false
-        end
-    end
-    return {Quitbutton_active}
-end
-
 local function gameLoop()
-    love.graphics.setFont(play_buttonFont)
+    love.graphics.setFont(Play_buttonFont)
     love.graphics.setColor(White)
     
 
     -- Make a quit button to return to the main menu
-    if quitButtonInteract()[1] == false then
-        love.graphics.setColor(Red)
-    else
-        love.graphics.setColor(Pale_Red)
-    end
+    love.graphics.setColor(Red)
     love.graphics.print("Quit", ScreenWidth * 0.01, ScreenHeight * 0)
 
     -- Function to return to main menu
-    if love.keyboard.isDown("space") then
+    if love.keyboard.isDown("lshift") then
         GameRunning = false
     end
 
@@ -81,16 +50,16 @@ function love.load()
 
     loadCSV("letters.csv")
 
-    titleFont = love.graphics.newFont("assets/fonts/custom.ttf", 100)
-    play_buttonFont = love.graphics.newFont("assets/fonts/custom.ttf", 50)
+    TitleFont = love.graphics.newFont("assets/fonts/custom.ttf", 100)
+    Play_buttonFont = love.graphics.newFont("assets/fonts/custom.ttf", 50)
 
     TitleOne = "Letter"
     TitleTwo = "Logic"
     Play_button = "Press space to Start"
 
-    TitleWidthOne = titleFont:getWidth(TitleOne)
-    TitleWidthTwo = titleFont:getWidth(TitleTwo)
-    TitleWidth_Play = play_buttonFont:getWidth(Play_button)
+    TitleWidthOne = TitleFont:getWidth(TitleOne)
+    TitleWidthTwo = TitleFont:getWidth(TitleTwo)
+    TitleWidth_Play = Play_buttonFont:getWidth(Play_button)
 
     TitleX_letter = (ScreenWidth - TitleWidthOne) / 2
     TitleX_logic = (ScreenWidth - TitleWidthTwo) / 2
@@ -111,14 +80,14 @@ end
 function love.update()
     Playbutton_active = false
     Quitbutton_active = false
-    mouseX, mouseY = love.mouse.getPosition()
+    MouseX, MouseY = love.mouse.getPosition()
 
 end
 
 function love.draw()
     if GameRunning == false then
         -- Set the font to title font
-        love.graphics.setFont(titleFont)
+        love.graphics.setFont(TitleFont)
 
         -- Display the Title "Letter"
         love.graphics.setColor(Blue)
@@ -129,14 +98,10 @@ function love.draw()
         love.graphics.print(TitleOne, TitleX_letter, ScreenHeight * 0.15)
 
         -- Set the Playbutton font
-        love.graphics.setFont(play_buttonFont)
+        love.graphics.setFont(Play_buttonFont)
 
         -- Display the Play_button
-        if isPlaybuttonInteract()[1] == false then
-            love.graphics.setColor(Green)
-        elseif isPlaybuttonInteract()[1] == true then
-            love.graphics.setColor(Pale_Green)
-        end
+        love.graphics.setColor(Green)
         love.graphics.print(Play_button, TitleX_Play, ScreenHeight * 0.60)
         
         if love.keyboard.isDown("space") then
