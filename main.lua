@@ -29,13 +29,15 @@ local function gameLoop()
     love.graphics.setFont(Play_buttonFont)
     love.graphics.setColor(White)
     
-
     -- Make a quit button to return to the main menu
     love.graphics.setColor(Red)
     love.graphics.print("Quit", ScreenWidth * 0.01, ScreenHeight * 0)
+    
+    love.graphics.setFont(Small_quitFont)
+    love.graphics.print("(Press Shift)", ScreenWidth * 0.01, ScreenHeight * 0.1)
 
     -- Function to return to main menu
-    if love.keyboard.isDown("lshift") then
+    if love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift") then
         GameRunning = false
     end
 
@@ -52,6 +54,7 @@ function love.load()
 
     TitleFont = love.graphics.newFont("assets/fonts/custom.ttf", 100)
     Play_buttonFont = love.graphics.newFont("assets/fonts/custom.ttf", 50)
+    Small_quitFont = love.graphics.newFont("assets/fonts/custom.ttf", 17)
 
     TitleOne = "Letter"
     TitleTwo = "Logic"
