@@ -30,13 +30,13 @@ local function gameLoop()
     love.graphics.setFont(Play_buttonFont)
     love.graphics.setColor(White)
     
-    -- Implementing the code for grid spawn
+    -- Implementing the code for grid spawning with letters
     for _, cell in ipairs(cells) do
         local letter = cell[1]
         local x = cell[2]
         local y = cell[3]
         love.graphics.rectangle("line", x * 100 + offset_x, y * 100 + offset_y, 100, 100)
-        love.graphics.print(letter, (x * 50) + offset_x, (y * 50) + offset_y)
+        love.graphics.print(letter, (x * 100) + offset_x + 32.5, (y * 100) + offset_y + 12.5)
     end
 
     -- Make a quit button to return to the main menu
@@ -51,8 +51,18 @@ local function gameLoop()
         GameRunning = false
     end
 
-    -- Draw the cells in the 2d space
+    -- Moving the screen with offsets variables
+    if love.keyboard.isDown("up") or love.keyboard.isDown("w") then
+        offset_y = offset_y + 1
+    elseif love.keyboard.isDown("down") or love.keyboard.isDown("s") then
+        offset_y = offset_y - 1
+    end
 
+    if love.keyboard.isDown("left") or love.keyboard.isDown("a") then
+        offset_x = offset_x + 1
+    elseif love.keyboard.isDown("right") or love.keyboard.isDown("d") then
+        offset_x = offset_x - 1
+    end
 end
 
 function love.load()
@@ -88,8 +98,8 @@ function love.load()
 
     GameRunning = false
 
-    offset_x = 6 * 50
-    offset_y = 6 * 50
+    offset_x = 350
+    offset_y = 400
 
 end
 
@@ -97,7 +107,6 @@ function love.update()
     Playbutton_active = false
     Quitbutton_active = false
     MouseX, MouseY = love.mouse.getPosition()
-
 end
 
 function love.draw()
