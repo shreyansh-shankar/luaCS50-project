@@ -1,14 +1,15 @@
+local offset_x, offset_y
 local csvData = {}
-local cells = {{'L', -2, 2},
-{'E', -2, 1},
-{'T', -2, 0},
-{'T', -2, -1},
+local cells = {{'L', -2, -3},
 {'E', -2, -2},
-{'R', -2, -3},
-{'O', -1, 2},
-{'G', 0, 2},
-{'I', 1, 2},
-{'C', 2, 2}}
+{'T', -2, -1},
+{'T', -2, 0},
+{'E', -2, 1},
+{'R', -2, 2},
+{'O', -1, -3},
+{'G', 0, -3},
+{'I', 1, -3},
+{'C', 2, -3}}
 
 local function loadCSV(filename)
     if love.filesystem.getInfo(filename) then
@@ -29,6 +30,15 @@ local function gameLoop()
     love.graphics.setFont(Play_buttonFont)
     love.graphics.setColor(White)
     
+    -- Implementing the code for grid spawn
+    for _, cell in ipairs(cells) do
+        local letter = cell[1]
+        local x = cell[2]
+        local y = cell[3]
+        love.graphics.rectangle("line", x * 100 + offset_x, y * 100 + offset_y, 100, 100)
+        love.graphics.print(letter, (x * 50) + offset_x, (y * 50) + offset_y)
+    end
+
     -- Make a quit button to return to the main menu
     love.graphics.setColor(Red)
     love.graphics.print("Quit", ScreenWidth * 0.01, ScreenHeight * 0)
@@ -77,6 +87,9 @@ function love.load()
     White = {0.8, 0.8, 0.8}
 
     GameRunning = false
+
+    offset_x = 6 * 50
+    offset_y = 6 * 50
 
 end
 
