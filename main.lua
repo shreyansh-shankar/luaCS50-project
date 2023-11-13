@@ -156,6 +156,7 @@ local function gameLoop()
     -- Drawing a rectangle to display the player cursor
     love.graphics.setColor(White)
     love.graphics.rectangle("line", 350, 300, 100, 100)
+    love.graphics.rectangle("line", 350, 300, 100, 100)
     love.graphics.setColor(Blue)
     love.graphics.rectangle("line", 352, 302, 96, 96)
     love.graphics.rectangle("line", 350, 300, 100, 100)
