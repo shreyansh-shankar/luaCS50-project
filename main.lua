@@ -1,5 +1,29 @@
+-- Setting the offset of the player from the screen
 local offset_x, offset_y
 local csvData = {}
+
+-- Intilialising the parameters for the movement keys
+-- Parameters for the W key
+upPressed = 0
+upReleased = 0
+upkeyisDown = 0
+
+-- Parameters for the A key
+leftPressed = 0
+leftReleased = 0
+leftkeyisDown = 0
+
+-- Parameters for the S key
+downPressed = 0
+downReleased = 0
+downkeyisDown = 0
+
+-- Parameters for the D key
+rightPressed = 0
+rightReleased = 0
+rightkeyisDown = 0
+
+-- Intial cells
 local cells = {{'L', -2, -3},
 {'E', -2, -2},
 {'T', -2, -1},
@@ -11,6 +35,7 @@ local cells = {{'L', -2, -3},
 {'I', 1, -3},
 {'C', 2, -3}}
 
+-- Loading the CSV data from the letters.csv file
 local function loadCSV(filename)
     if love.filesystem.getInfo(filename) then
         local contents, size = love.filesystem.read(filename)
@@ -26,6 +51,95 @@ local function loadCSV(filename)
     end
 end
 
+-- Function for the precise movement of the player on the screen
+local function movementKeys()
+
+    -- When 'UP' key is down
+    if love.keyboard.isDown("up") == true then
+        upkeyisDown = 1
+    else
+        upkeyisDown = 0
+    end
+    -- To check if key is pressed
+    if upkeyisDown == 1 and upPressed == 0 then
+        upPressed = 1
+    end
+    -- To check if the pressed key is released
+    if upkeyisDown == 0 and upPressed == 1 then
+        upReleased = 1
+    end
+    -- To execute the code when key is released
+    if upReleased == 1 then
+        offset_y = offset_y + 100
+        upReleased = 0
+        upPressed = 0
+    end
+
+    -- When 'LEFT' key is down
+    if love.keyboard.isDown("left") == true then
+        leftkeyisDown = 1
+    else
+        leftkeyisDown = 0
+    end
+    -- To check if the key is pressed
+    if leftkeyisDown == 1 and leftPressed == 0 then
+        leftPressed = 1
+    end
+    -- To check if the key is released
+    if leftkeyisDown == 0 and leftPressed == 1 then
+        leftReleased = 1
+    end
+    -- To execute the code when key is released
+    if leftReleased == 1 then
+        offset_x = offset_x + 100
+        leftReleased = 0
+        leftPressed = 0
+    end
+
+    -- When 'DOWN' is down
+    if love.keyboard.isDown("down") == true then
+        downkeyisDown = 1
+    else
+        downkeyisDown = 0
+    end
+    -- To check if the key is pressed
+    if downkeyisDown == 1 and downPressed == 0 then
+        downPressed = 1
+    end
+    -- To check if the key is released
+    if downkeyisDown == 0 and downPressed == 1 then
+        downReleased = 1
+    end
+    -- To execute the code when the key is released
+    if downReleased == 1 then
+        offset_y = offset_y - 100
+        downReleased = 0
+        downPressed = 0
+    end
+
+    -- When the 'RIGHT' is down
+    if love.keyboard.isDown("right") == true then   
+        rightkeyisDown = 1
+    else
+        rightkeyisDown = 0
+    end
+    -- To check if the key is pressed
+    if rightkeyisDown == 1 and rightPressed == 0 then
+        rightPressed = 1
+    end
+    -- To check if the key is released
+    if rightkeyisDown == 0 and rightPressed == 1 then
+        rightReleased = 1
+    end
+    -- To execute the code when the key is released
+    if rightReleased == 1 then
+        offset_x = offset_x - 100
+        rightReleased = 0
+        rightPressed = 0
+    end
+end
+
+-- Gameloop is the function where the functions related to gameplay exist
 local function gameLoop()
     love.graphics.setFont(Play_buttonFont)
     love.graphics.setColor(White)
@@ -39,9 +153,17 @@ local function gameLoop()
         love.graphics.print(letter, (x * 100) + offset_x + 32.5, (y * 100) + offset_y + 12.5)
     end
 
+    -- Drawing a rectangle to display the player cursor
+    love.graphics.setColor(White)
+    love.graphics.rectangle("line", 350, 300, 100, 100)
+    love.graphics.setColor(Blue)
+    love.graphics.rectangle("line", 352, 302, 96, 96)
+    love.graphics.rectangle("line", 350, 300, 100, 100)
+    love.graphics.rectangle("line", 348, 298 , 104, 104)
+
     -- Make a quit button to return to the main menu
     love.graphics.setColor(Red)
-    love.graphics.print("Quit", ScreenWidth * 0.01, ScreenHeight * 0)
+    love.graphics.print("Back", ScreenWidth * 0.01, ScreenHeight * 0)
     
     love.graphics.setFont(Small_quitFont)
     love.graphics.print("(Press Shift)", ScreenWidth * 0.01, ScreenHeight * 0.1)
@@ -51,18 +173,9 @@ local function gameLoop()
         GameRunning = false
     end
 
-    -- Moving the screen with offsets variables
-    if love.keyboard.isDown("up") or love.keyboard.isDown("w") then
-        offset_y = offset_y + 1
-    elseif love.keyboard.isDown("down") or love.keyboard.isDown("s") then
-        offset_y = offset_y - 1
-    end
-
-    if love.keyboard.isDown("left") or love.keyboard.isDown("a") then
-        offset_x = offset_x + 1
-    elseif love.keyboard.isDown("right") or love.keyboard.isDown("d") then
-        offset_x = offset_x - 1
-    end
+    -- Calling function for the movement
+    movementKeys()
+    
 end
 
 function love.load()
@@ -129,6 +242,7 @@ function love.draw()
         love.graphics.setColor(Green)
         love.graphics.print(Play_button, TitleX_Play, ScreenHeight * 0.60)
         
+        -- Running the gameloop when the play button is pressed
         if love.keyboard.isDown("space") then
             GameRunning = true
         end
