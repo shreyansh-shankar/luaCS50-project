@@ -27,6 +27,11 @@ rightkeyisDown = 0
 local intialLetter = 0
 local cells = {}
 
+-- Initialising the parameters for the undo key
+undokeyPressed = 0
+undokeyReleased = 0
+undokeyisDown = 0
+
 -- Loading the CSV data from the letters.csv file
 local function loadCSV(filename)
     if love.filesystem.getInfo(filename) then
@@ -182,25 +187,51 @@ local function displayInput(input)
     
     -- Adding the new input to the cells
     if input == '#' then
-        
+        -- If the player is not pressing any key
     elseif occupiedBlock(playerCursorX, playerCursorY) == 1 then
-
+        -- If the player is trying to input on an already occupied block
     else
         table.insert(cells, {input, playerCursorX, playerCursorY})
+    end
+end
+
+local function undoPreviousInput()
+
+    -- Displaying the text for Undo button
+    love.graphics.setColor(Yellow)
+    love.graphics.setFont(Undo_font)
+    love.graphics.print("Press TAB to undo", 240, 15)
+
+    -- When the tab key is down
+    if love.keyboard.isDown("tab") == true then
+        undokeyisDown = 1
+    else
+        undokeyisDown = 0
+    end
+    -- To check if the key is pressed
+    if undokeyisDown == 1 and undokeyPressed == 0 then
+        undokeyPressed = 1
+    end
+    -- To check if the key is released
+    if undokeyisDown == 0 and undokeyPressed == 1 then
+        undokeyReleased = 1
+    end
+    -- To execute the code when the tab key is released
+    if undokeyReleased == 1 then
+        if cells[#cells][2] == 2 and cells[#cells][3] == 2 then
+            -- When the player has no input on the screen
+        else
+            table.remove(cells)
+        undokeyPressed = 0
+        undokeyReleased = 0
+        end
     end
 end
 
 -- Gameloop is the function where the functions related to gameplay exist
 local function gameLoop()
 
-    -- Make a quit button to return to the main menu
-    love.graphics.setColor(Red)
-    love.graphics.print("Back", ScreenWidth * 0.01, ScreenHeight * 0)
-    
-    love.graphics.setFont(Small_quitFont)
-    love.graphics.print("(Press Shift)", ScreenWidth * 0.01, ScreenHeight * 0.1)
-
-    -- Setting the font for the rest of the code
+    -- Setting the font of the cells
     love.graphics.setFont(Play_buttonFont)
     love.graphics.setColor(White)
     
@@ -222,6 +253,13 @@ local function gameLoop()
     love.graphics.rectangle("line", 350, 400, 100, 100)
     love.graphics.rectangle("line", 348, 398 , 104, 104)
 
+    -- Make a quit button to return to the main menu
+    love.graphics.setColor(Red)
+    love.graphics.print("Back", ScreenWidth * 0.01, ScreenHeight * 0)
+    
+    love.graphics.setFont(Small_quitFont)
+    love.graphics.print("(Press Shift)", ScreenWidth * 0.01, ScreenHeight * 0.1)
+
     -- Function to return to main menu
     if love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift") then
         GameRunning = false
@@ -235,7 +273,9 @@ local function gameLoop()
 
     -- Calling the function to display the player input on the screen
     displayInput(input)
-    
+
+    -- Calling the undo function if player wants to undo previous output
+    undoPreviousInput()
 end
 
 function love.load()
@@ -248,6 +288,7 @@ function love.load()
     TitleFont = love.graphics.newFont("assets/fonts/custom.ttf", 100)
     Play_buttonFont = love.graphics.newFont("assets/fonts/custom.ttf", 50)
     Small_quitFont = love.graphics.newFont("assets/fonts/custom.ttf", 17)
+    Undo_font = love.graphics.newFont("assets/fonts/custom.ttf", 30)
 
     TitleOne = "Letter"
     TitleTwo = "Logic"
@@ -268,12 +309,12 @@ function love.load()
     Pale_Red = {0.6, 0, 0}
     Light_black = {0.1, 0.1, 0.1}
     White = {0.8, 0.8, 0.8}
+    Yellow = {0.8, 0.8, 0}
 
     GameRunning = false
 
     offset_x = 350
     offset_y = 400
-
 end
 
 function love.update()
@@ -310,8 +351,6 @@ function love.draw()
     elseif GameRunning == true then
         gameLoop()
     end
-
     -- Set the background color to light_black
     love.graphics.setColor(Light_black)
-
 end
