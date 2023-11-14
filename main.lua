@@ -139,6 +139,18 @@ local function movementKeys()
     end
 end
 
+-- Function to detect the input of the player
+local function playerInput()
+    local input = '#'
+    for _,key in ipairs(csvData) do
+        local aV = string.byte(key[1])
+        if love.keyboard.isDown(string.char(aV + 32)) == true then
+            input = key[1]
+        end
+    end
+    return input
+end
+
 -- Gameloop is the function where the functions related to gameplay exist
 local function gameLoop()
     love.graphics.setFont(Play_buttonFont)
@@ -176,6 +188,9 @@ local function gameLoop()
 
     -- Calling function for the movement
     movementKeys()
+
+    -- Calling functin to get the player input
+    local input = playerInput()
     
 end
 
@@ -252,7 +267,7 @@ function love.draw()
         gameLoop()
     end
 
-    -- Set else to light_black
+    -- Set the background color to light_black
     love.graphics.setColor(Light_black)
 
 end
