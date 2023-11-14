@@ -24,16 +24,8 @@ rightReleased = 0
 rightkeyisDown = 0
 
 -- Intial cells
-local cells = {{'L', -2, -3},
-{'E', -2, -2},
-{'T', -2, -1},
-{'T', -2, 0},
-{'E', -2, 1},
-{'R', -2, 2},
-{'O', -1, -3},
-{'G', 0, -3},
-{'I', 1, -3},
-{'C', 2, -3}}
+local intialLetter = 0
+local cells = {}
 
 -- Loading the CSV data from the letters.csv file
 local function loadCSV(filename)
@@ -151,8 +143,64 @@ local function playerInput()
     return input
 end
 
+-- Function to check if the block already has a cell present
+local function occupiedBlock(playerCursorX, playerCursorY)
+    blockOccupied = 0
+    for _, value in ipairs(cells) do
+        if value[2] == playerCursorX and value[3] == playerCursorY then
+            blockOccupied = 1
+        end
+    end
+    return blockOccupied
+end
+
+-- Functtion to display the input on the screen
+local function displayInput(input)
+    
+    -- Setting the font and color
+    love.graphics.setColor(White)
+    love.graphics.setFont(Play_buttonFont)
+
+    -- Initialising the position of the player cell
+    local playerCursorX = (-offset_x + 350) / 100
+    local playerCursorY = ((offset_y - 400) / 100)
+
+    -- Displaying the initial elements of the word lETTER and LOGIC
+    if intialLetter == 0 then
+        table.insert(cells, {'L', -2, 2})
+        table.insert(cells, {'E', -2, 1})
+        table.insert(cells, {'T', -2, 0})
+        table.insert(cells, {'T', -2, -1})
+        table.insert(cells, {'E', -2, -2})
+        table.insert(cells, {'R', -2, -3})
+        table.insert(cells, {'O', -1, 2})
+        table.insert(cells, {'G', 0, 2})
+        table.insert(cells, {'I', 1, 2})
+        table.insert(cells, {'C', 2, 2})
+        intialLetter = 1
+    end
+    
+    -- Adding the new input to the cells
+    if input == '#' then
+        
+    elseif occupiedBlock(playerCursorX, playerCursorY) == 1 then
+
+    else
+        table.insert(cells, {input, playerCursorX, playerCursorY})
+    end
+end
+
 -- Gameloop is the function where the functions related to gameplay exist
 local function gameLoop()
+
+    -- Make a quit button to return to the main menu
+    love.graphics.setColor(Red)
+    love.graphics.print("Back", ScreenWidth * 0.01, ScreenHeight * 0)
+    
+    love.graphics.setFont(Small_quitFont)
+    love.graphics.print("(Press Shift)", ScreenWidth * 0.01, ScreenHeight * 0.1)
+
+    -- Setting the font for the rest of the code
     love.graphics.setFont(Play_buttonFont)
     love.graphics.setColor(White)
     
@@ -161,25 +209,18 @@ local function gameLoop()
         local letter = cell[1]
         local x = cell[2]
         local y = cell[3]
-        love.graphics.rectangle("line", x * 100 + offset_x, y * 100 + offset_y, 100, 100)
-        love.graphics.print(letter, (x * 100) + offset_x + 32.5, (y * 100) + offset_y + 12.5)
+        love.graphics.rectangle("line", x * 100 + offset_x, -y * 100 + offset_y, 100, 100)
+        love.graphics.print(letter, (x * 100) + offset_x + 32.5, (-y * 100) + offset_y + 12.5)
     end
 
     -- Drawing a rectangle to display the player cursor
     love.graphics.setColor(White)
-    love.graphics.rectangle("line", 350, 300, 100, 100)
-    love.graphics.rectangle("line", 350, 300, 100, 100)
+    love.graphics.rectangle("line", 350, 400, 100, 100)
+    love.graphics.rectangle("line", 350, 400, 100, 100)
     love.graphics.setColor(Blue)
-    love.graphics.rectangle("line", 352, 302, 96, 96)
-    love.graphics.rectangle("line", 350, 300, 100, 100)
-    love.graphics.rectangle("line", 348, 298 , 104, 104)
-
-    -- Make a quit button to return to the main menu
-    love.graphics.setColor(Red)
-    love.graphics.print("Back", ScreenWidth * 0.01, ScreenHeight * 0)
-    
-    love.graphics.setFont(Small_quitFont)
-    love.graphics.print("(Press Shift)", ScreenWidth * 0.01, ScreenHeight * 0.1)
+    love.graphics.rectangle("line", 352, 402, 96, 96)
+    love.graphics.rectangle("line", 350, 400, 100, 100)
+    love.graphics.rectangle("line", 348, 398 , 104, 104)
 
     -- Function to return to main menu
     if love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift") then
@@ -191,6 +232,9 @@ local function gameLoop()
 
     -- Calling functin to get the player input
     local input = playerInput()
+
+    -- Calling the function to display the player input on the screen
+    displayInput(input)
     
 end
 
