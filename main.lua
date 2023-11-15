@@ -159,6 +159,25 @@ local function occupiedBlock(playerCursorX, playerCursorY)
     return blockOccupied
 end
 
+-- Function to check if the position of the input is near a existing cell
+local function nearCell(playerCursorX, playerCursorY)
+    local nearCellExist = 0
+    for _, cell in ipairs(cells) do
+        if playerCursorX == cell[2] then
+            if (playerCursorY-1) == cell[3] or (playerCursorY+1) == cell[3] then
+                nearCellExist = 1
+                break
+            end
+        elseif playerCursorY == cell[3] then
+            if (playerCursorX-1) == cell[2] or (playerCursorX+1) == cell[2] then
+                nearCellExist = 1
+                break
+            end
+        end
+    end
+    return nearCellExist
+end
+
 -- Functtion to display the input on the screen
 local function displayInput(input)
     
@@ -190,6 +209,8 @@ local function displayInput(input)
         -- If the player is not pressing any key
     elseif occupiedBlock(playerCursorX, playerCursorY) == 1 then
         -- If the player is trying to input on an already occupied block
+    elseif nearCell(playerCursorX, playerCursorY) == 0 then
+        -- If the player cursor is not near any cell 
     else
         table.insert(cells, {input, playerCursorX, playerCursorY})
     end
@@ -351,6 +372,7 @@ function love.draw()
     elseif GameRunning == true then
         gameLoop()
     end
+
     -- Set the background color to light_black
     love.graphics.setColor(Light_black)
 end
