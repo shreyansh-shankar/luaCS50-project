@@ -5,6 +5,8 @@ local csvData = {}
 -- Variables to detect horizontal and vertical input
 local hor = 0
 local ver = 0
+
+-- Initialising the varaiable to store the score
 local score = 0
 
 -- Intilialising the parameters for the movement keys
