@@ -26,6 +26,7 @@ rightkeyisDown = 0
 -- Intial cells
 local intialLetter = 0
 local cells = {}
+local tempCells ={}
 
 -- Initialising the parameters for the undo key
 undokeyPressed = 0
@@ -154,6 +155,13 @@ local function occupiedBlock(playerCursorX, playerCursorY)
     for _, value in ipairs(cells) do
         if value[2] == playerCursorX and value[3] == playerCursorY then
             blockOccupied = 1
+            break
+        end
+    end
+    for _, value in ipairs(tempCells) do
+        if value[2] == playerCursorX and value[3] == playerCursorY then
+            blockOccupied = 1
+            break
         end
     end
     return blockOccupied
@@ -163,6 +171,19 @@ end
 local function nearCell(playerCursorX, playerCursorY)
     local nearCellExist = 0
     for _, cell in ipairs(cells) do
+        if playerCursorX == cell[2] then
+            if (playerCursorY-1) == cell[3] or (playerCursorY+1) == cell[3] then
+                nearCellExist = 1
+                break
+            end
+        elseif playerCursorY == cell[3] then
+            if (playerCursorX-1) == cell[2] or (playerCursorX+1) == cell[2] then
+                nearCellExist = 1
+                break
+            end
+        end
+    end
+    for _, cell in ipairs(tempCells) do
         if playerCursorX == cell[2] then
             if (playerCursorY-1) == cell[3] or (playerCursorY+1) == cell[3] then
                 nearCellExist = 1
@@ -212,7 +233,7 @@ local function displayInput(input)
     elseif nearCell(playerCursorX, playerCursorY) == 0 then
         -- If the player cursor is not near any cell 
     else
-        table.insert(cells, {input, playerCursorX, playerCursorY})
+        table.insert(tempCells, {input, playerCursorX, playerCursorY})
     end
 end
 
@@ -239,10 +260,14 @@ local function undoPreviousInput()
     end
     -- To execute the code when the tab key is released
     if undokeyReleased == 1 then
-        if cells[#cells][2] == 2 and cells[#cells][3] == 2 then
+        if (cells[#cells][2] == 2 and cells[#cells][3] == 2) and (#tempCells == 0) then
             -- When the player has no input on the screen
         else
-            table.remove(cells)
+            if #tempCells == 0 then
+                table.remove(cells)
+            else
+                table.remove(tempCells)
+            end
         undokeyPressed = 0
         undokeyReleased = 0
         end
@@ -258,6 +283,15 @@ local function gameLoop()
     
     -- Implementing the code for grid spawning with letters
     for _, cell in ipairs(cells) do
+        local letter = cell[1]
+        local x = cell[2]
+        local y = cell[3]
+        love.graphics.rectangle("line", x * 100 + offset_x, -y * 100 + offset_y, 100, 100)
+        love.graphics.print(letter, (x * 100) + offset_x + 32.5, (-y * 100) + offset_y + 12.5)
+    end
+
+    -- Adding the new values in tempCells upon the input of the user
+    for _, cell in ipairs(tempCells) do
         local letter = cell[1]
         local x = cell[2]
         local y = cell[3]
