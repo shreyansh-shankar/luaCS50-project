@@ -2,6 +2,11 @@
 local offset_x, offset_y
 local csvData = {}
 
+-- Variables to detect horizontal and vertical input
+local hor = 0
+local ver = 0
+local score = 0
+
 -- Intilialising the parameters for the movement keys
 -- Parameters for the W key
 upPressed = 0
@@ -199,6 +204,66 @@ local function nearCell(playerCursorX, playerCursorY)
     return nearCellExist
 end
 
+-- Function to check if the entered word is valid
+local function checkValidWord()
+    local valid = 0
+    if love.keyboard.isDown("space") then
+        valid = 1
+    end
+    return valid
+end
+
+-- Function to calculate the score and print on the screen
+local function scoreCalc()
+    local score = 0
+    for _,cell in ipairs(cells) do
+        for _, value in ipairs(csvData) do
+            if cell[1] == value[1] then
+                score = score + value[2]
+                break
+            end
+        end
+    end
+    return score
+end
+
+local function addtoCells()
+    if checkValidWord() == 1 then
+        for _, cell in ipairs(tempCells) do
+            table.insert(cells, cell)
+        end
+        tempCells = {}
+        score = scoreCalc() - 13
+    end
+end
+
+-- Function to prevent unlinear input from the player 
+local function linearWord(playerCursorX, playerCursorY)
+    linear = 1
+    --Checking if the linear direction is horizontal or vertical
+    if #tempCells == 2 then
+        if tempCells[1][2] == tempCells[2][2] then
+            hor = 1
+            ver = 0
+        elseif tempCells[1][3] == tempCells[2][3] then
+            ver = 1
+            hor = 0
+        end
+    end
+    if #tempCells >= 2 then
+        if hor == 1 then
+            if playerCursorX ~= tempCells[1][2] then
+                linear = 0
+            end
+        elseif ver == 1 then
+            if playerCursorY ~= tempCells[1][3] then
+                linear = 0
+            end
+        end
+    end
+    return linear
+end
+
 -- Functtion to display the input on the screen
 local function displayInput(input)
     
@@ -231,7 +296,9 @@ local function displayInput(input)
     elseif occupiedBlock(playerCursorX, playerCursorY) == 1 then
         -- If the player is trying to input on an already occupied block
     elseif nearCell(playerCursorX, playerCursorY) == 0 then
-        -- If the player cursor is not near any cell 
+        -- If the player cursor is not near any cell
+    elseif linearWord(playerCursorX, playerCursorY) == 0 then
+        -- If the player is trying to input in unlinear direction
     else
         table.insert(tempCells, {input, playerCursorX, playerCursorY})
     end
@@ -242,7 +309,9 @@ local function undoPreviousInput()
     -- Displaying the text for Undo button
     love.graphics.setColor(Yellow)
     love.graphics.setFont(Undo_font)
-    love.graphics.print("Press TAB to undo", 240, 15)
+    love.graphics.print("Press TAB to undo", 250, 15)
+
+    love.graphics.print("Press SPACE to check the word", 150, 60)
 
     -- When the tab key is down
     if love.keyboard.isDown("tab") == true then
@@ -331,6 +400,17 @@ local function gameLoop()
 
     -- Calling the undo function if player wants to undo previous output
     undoPreviousInput()
+
+    -- Calling the function to modify the tempCells and cells
+    if love.keyboard.isDown("space") then
+        addtoCells()
+    end
+
+    -- Printing the score on the screen
+    love.graphics.setFont(Undo_font)
+    love.graphics.setColor(Green)
+    love.graphics.print("Score",  ScreenWidth - 100, 5)
+    love.graphics.print(score, ScreenWidth - 100, 40)
 end
 
 function love.load()
