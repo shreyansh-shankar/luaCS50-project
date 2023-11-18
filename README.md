@@ -1,1 +1,3 @@
-A crossword like simple game, made for the CS50 final project.
+Project Title: Letter Logic - Crossword Game
+Video Demo: https://youtu.be/luVwih-nJRk
+Description: Letter Logic is a small engaging crossword like single player where you can form words and get points depending on the letters you have used in the word formed. The game starts initially with only two words "LETTER" and "LOGIC", the title of the game, and the player do not get points for those two words. You can enjoy the game endlessly without any problem. 
